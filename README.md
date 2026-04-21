@@ -2,10 +2,6 @@
 
 > Detect verbatim copying **and** intelligent paraphrasing using a hybrid NLP pipeline combining statistical and semantic techniques.
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python\&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi\&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green)
-
 ---
 
 # UI Preview
