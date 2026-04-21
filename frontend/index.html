@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PlagiarismCheck — Similarity Detection Engine</title>
+
+  <!-- ✅ Favicon -->
+
+  <link rel="icon" href="/static/favicon.png" type="image/png">
+
+  <!-- Fonts -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+
+  <!-- Styles -->
+
+  <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+
+<body>
+
+  <!-- ═══════════════════════ HEADER ═══════════════════════ -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">⬡</span>
+        <span class="logo-text">Plagiarism<em>Check</em></span>
+      </div>
+      <nav class="header-nav">
+        <a href="#text-mode" class="nav-link active" data-mode="text">Text Input</a>
+        <a href="#file-mode" class="nav-link" data-mode="file">File Upload</a>
+      </nav>
+      <div class="health-indicator" id="healthDot" title="Checking API...">
+        <span class="dot"></span>
+        <span class="health-label">API</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════ HERO ═══════════════════════ -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">Multi-Strategy NLP Engine</div>
+      <h1 class="hero-title">
+        Detect Similarity.<br />
+        <em>Expose Paraphrasing.</em>
+      </h1>
+      <p class="hero-sub">
+        Combines shingling, TF-IDF cosine distance, and semantic embeddings
+        to surface both verbatim copies and cleverly reworded content.
+      </p>
+      <div class="hero-chips">
+        <span class="chip">Jaccard Shingling</span>
+        <span class="chip">TF-IDF Cosine</span>
+        <span class="chip chip-accent">Semantic Embeddings</span>
+        <span class="chip">Sentence Alignment</span>
+      </div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="grid-pattern"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════ MAIN ═══════════════════════ -->
+  <main class="main-content">
+
+    <!-- ─────────────── MODE TABS ─────────────── -->
+    <div class="mode-tabs" id="modeTabs">
+      <button class="tab-btn active" data-tab="text">
+        <span class="tab-icon">✎</span> Text Comparison
+      </button>
+      <button class="tab-btn" data-tab="file">
+        <span class="tab-icon">⬆</span> File Upload
+      </button>
+    </div>
+
+    <!-- ─────────────── TEXT MODE ─────────────── -->
+    <section class="panel active" id="panel-text">
+      <div class="editors-grid">
+
+        <div class="editor-card">
+          <div class="editor-header">
+            <span class="editor-label">Document A</span>
+            <button class="btn-ghost" id="clearA">Clear</button>
+          </div>
+          <textarea
+            id="textA"
+            class="editor-area"
+            placeholder="Paste or type the first document here…&#10;&#10;Minimum 20 characters."
+            spellcheck="false"
+          ></textarea>
+          <div class="char-count" id="countA">0 characters</div>
+        </div>
+
+        <div class="editor-divider">
+          <span class="divider-label">VS</span>
+        </div>
+
+        <div class="editor-card">
+          <div class="editor-header">
+            <span class="editor-label">Document B</span>
+            <button class="btn-ghost" id="clearB">Clear</button>
+          </div>
+          <textarea
+            id="textB"
+            class="editor-area"
+            placeholder="Paste or type the second document here…&#10;&#10;Minimum 20 characters."
+            spellcheck="false"
+          ></textarea>
+          <div class="char-count" id="countB">0 characters</div>
+        </div>
+
+      </div>
+
+      <div class="action-bar">
+        <button class="btn-primary" id="btnCheckText">
+          <span class="btn-icon">◈</span>
+          Analyse Similarity
+        </button>
+        <button class="btn-secondary" id="btnLoadSample">Load Sample</button>
+      </div>
+    </section>
+
+    <!-- ─────────────── FILE MODE ─────────────── -->
+    <section class="panel" id="panel-file">
+      <div class="editors-grid">
+
+        <div class="editor-card">
+          <div class="editor-header">
+            <span class="editor-label">Document A</span>
+          </div>
+          <label class="upload-zone" id="dropA" for="fileInputA">
+            <div class="upload-icon">⬡</div>
+            <div class="upload-text">Drop file here or <u>browse</u></div>
+            <div class="upload-hint">.txt · .pdf · .docx &nbsp;|&nbsp; max 5 MB</div>
+            <div class="upload-filename" id="filenameA"></div>
+          </label>
+          <input type="file" id="fileInputA" accept=".txt,.pdf,.docx" hidden />
+        </div>
+
+        <div class="editor-divider">
+          <span class="divider-label">VS</span>
+        </div>
+
+        <div class="editor-card">
+          <div class="editor-header">
+            <span class="editor-label">Document B</span>
+          </div>
+          <label class="upload-zone" id="dropB" for="fileInputB">
+            <div class="upload-icon">⬡</div>
+            <div class="upload-text">Drop file here or <u>browse</u></div>
+            <div class="upload-hint">.txt · .pdf · .docx &nbsp;|&nbsp; max 5 MB</div>
+            <div class="upload-filename" id="filenameB"></div>
+          </label>
+          <input type="file" id="fileInputB" accept=".txt,.pdf,.docx" hidden />
+        </div>
+
+      </div>
+
+      <div class="action-bar">
+        <button class="btn-primary" id="btnCheckFiles">
+          <span class="btn-icon">◈</span>
+          Analyse Files
+        </button>
+      </div>
+    </section>
+
+    <!-- ─────────────── LOADER ─────────────── -->
+    <div class="loader-wrapper" id="loader" hidden>
+      <div class="loader-spinner"></div>
+      <p class="loader-text" id="loaderText">Processing documents…</p>
+      <p class="loader-sub">Running NLP pipeline — this may take a moment.</p>
+    </div>
+
+    <!-- ─────────────── ERROR BANNER ─────────────── -->
+    <div class="error-banner" id="errorBanner" hidden>
+      <span class="error-icon">⚠</span>
+      <span class="error-msg" id="errorMsg"></span>
+      <button class="error-close" id="errorClose">✕</button>
+    </div>
+
+    <!-- ─────────════════════ RESULTS ═════════════════════── -->
+    <section class="results-section" id="resultsSection" hidden>
+
+      <!-- Score card row -->
+      <div class="score-row">
+        <div class="score-card score-main">
+          <div class="score-label">Similarity Score</div>
+          <div class="score-value" id="scoreMain">—</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar" id="scoreBar"></div>
+          </div>
+          <div class="score-verdict" id="scoreVerdict"></div>
+        </div>
+
+        <div class="score-breakdown">
+          <div class="breakdown-title">Score Breakdown</div>
+
+          <div class="metric-row">
+            <span class="metric-name">Jaccard (shingles)</span>
+            <span class="metric-bar-wrap">
+              <span class="metric-bar" id="barJaccard"></span>
+            </span>
+            <span class="metric-val" id="valJaccard">—</span>
+          </div>
+
+          <div class="metric-row">
+            <span class="metric-name">TF-IDF cosine</span>
+            <span class="metric-bar-wrap">
+              <span class="metric-bar" id="barTfidf"></span>
+            </span>
+            <span class="metric-val" id="valTfidf">—</span>
+          </div>
+
+          <div class="metric-row" id="rowSemantic">
+            <span class="metric-name">Semantic (embeddings)</span>
+            <span class="metric-bar-wrap">
+              <span class="metric-bar" id="barSemantic"></span>
+            </span>
+            <span class="metric-val" id="valSemantic">—</span>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-key" id="metaSemStatus"></span>
+            <span class="meta-key" id="metaTime"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Matched sentences -->
+      <div class="matches-section" id="matchesSection">
+        <div class="section-header">
+          <h2 class="section-title">Matched Segments
+            <span class="match-count" id="matchCount">0</span>
+          </h2>
+          <div class="section-controls">
+            <label class="toggle-label">
+              <input type="checkbox" id="toggleSemOnly" />
+              Semantic only
+            </label>
+          </div>
+        </div>
+
+        <div class="matches-list" id="matchesList">
+          <!-- injected by JS -->
+        </div>
+
+        <div class="no-matches" id="noMatches" hidden>
+          <span class="no-matches-icon">✓</span>
+          No significant sentence-level overlaps detected.
+        </div>
+      </div>
+
+      <!-- Side-by-side highlighted view -->
+      <div class="highlight-section">
+        <div class="section-header">
+          <h2 class="section-title">Side-by-Side Highlight View</h2>
+          <p class="section-desc">
+            Sentences that appear in the matched list are highlighted below.
+          </p>
+        </div>
+
+        <div class="highlight-grid">
+          <div class="highlight-pane">
+            <div class="pane-label">Document A</div>
+            <div class="pane-body" id="paneA"></div>
+          </div>
+          <div class="highlight-pane">
+            <div class="pane-label">Document B</div>
+            <div class="pane-body" id="paneB"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reset -->
+      <div class="reset-bar">
+        <button class="btn-secondary" id="btnReset">← Run Another Check</button>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>PlagiarismCheck · NLP Similarity Engine</span>
+      <span class="footer-stack">Python · FastAPI · NLTK · scikit-learn</span>
+    </div>
+  </footer>
+
+  <script src="/static/js/script.js"></script>
+</body>
+</html>
