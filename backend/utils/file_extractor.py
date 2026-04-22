@@ -8,31 +8,32 @@ import numpy as np
 import cv2
 from .ocr_handwriting import extract_handwritten_text
 
-# ✅ SAFE: Use environment variable with fallback (NO BREAK)
-pytesseract.pytesseract.tesseract_cmd = os.getenv(
-    "TESSERACT_PATH",
-    r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-)
+# -----------------------------------------------------------
+# ✅ FIXED TESSERACT PATH (CROSS PLATFORM)
+# -----------------------------------------------------------
+if os.name == "nt":
+    # Windows (local machine)
+    pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+else:
+    # Linux (Docker / Render)
+    pytesseract.pytesseract.tesseract_cmd = "tesseract"
 
 
 # -----------------------------------------------------------
-# 🔧 IMAGE PREPROCESSING (IMPROVED)
+# 🔧 IMAGE PREPROCESSING
 # -----------------------------------------------------------
 def preprocess_image(image: Image.Image) -> Image.Image:
     img = np.array(image)
 
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # 🔥 sharpen
     kernel = np.array([[0, -1, 0],
                        [-1, 5, -1],
                        [0, -1, 0]])
     gray = cv2.filter2D(gray, -1, kernel)
 
-    # 🔥 denoise
     gray = cv2.fastNlMeansDenoising(gray, None, 30, 7, 21)
 
-    # 🔥 threshold (clean binary image)
     thresh = cv2.threshold(
         gray, 0, 255,
         cv2.THRESH_BINARY + cv2.THRESH_OTSU
@@ -42,7 +43,7 @@ def preprocess_image(image: Image.Image) -> Image.Image:
 
 
 # -----------------------------------------------------------
-# 🔍 OCR VALIDATION (STRONG)
+# 🔍 OCR VALIDATION
 # -----------------------------------------------------------
 def _is_valid_ocr(text: str) -> bool:
     words = text.split()
@@ -77,18 +78,13 @@ def _is_valid_ocr(text: str) -> bool:
 
 
 # -----------------------------------------------------------
-# 🔧 OCR CLEANING (STRONG)
+# 🔧 OCR CLEANING
 # -----------------------------------------------------------
 def clean_ocr_text(text: str) -> str:
     text = text.strip().lower()
 
-    # keep structure, remove noise
     text = re.sub(r'[^a-zA-Z0-9\s.,!?]', ' ', text)
-
-    # remove single-letter junk
     text = re.sub(r'\b(?!a\b|i\b)[a-z]\b', '', text)
-
-    # normalize spacing
     text = re.sub(r'\s+', ' ', text)
 
     words = text.split()
@@ -124,13 +120,11 @@ def extract_text(file_bytes: bytes, filename: str) -> str:
             for page in pdf.pages:
                 extracted = page.extract_text()
 
-                # fallback to OCR if needed
                 if not extracted or len(extracted.strip()) < 20:
                     img = page.to_image(resolution=300).original
                     img = Image.fromarray(np.array(img))
 
                     print("🔥 USING GOOGLE OCR (PDF)")
-
                     extracted = extract_handwritten_text(
                         cv2.imencode('.png', np.array(img))[1].tobytes()
                     )
@@ -145,11 +139,7 @@ def extract_text(file_bytes: bytes, filename: str) -> str:
 
                 text += (extracted or "") + "\n"
 
-        print("🔎 RAW OCR:", text[:200])
-
         text = clean_ocr_text(text)
-
-        print("✅ CLEAN OCR:", text[:200])
 
         if not _is_valid_ocr(text):
             return ""
@@ -159,18 +149,14 @@ def extract_text(file_bytes: bytes, filename: str) -> str:
     # ---------------- DOCX ----------------
     elif filename.endswith(".docx"):
         from docx import Document
-
         doc = Document(io.BytesIO(file_bytes))
-        text = "\n".join([p.text for p in doc.paragraphs])
-
-        return text.strip()
+        return "\n".join([p.text for p in doc.paragraphs]).strip()
 
     # ---------------- IMAGE ----------------
     elif filename.endswith((".png", ".jpg", ".jpeg")):
         image = Image.open(io.BytesIO(file_bytes)).convert("RGB")
 
         print("🔥 USING GOOGLE OCR (IMAGE)")
-
         text = extract_handwritten_text(file_bytes)
 
         if not text.strip():
@@ -181,17 +167,12 @@ def extract_text(file_bytes: bytes, filename: str) -> str:
                 config="--oem 3 --psm 4 -l eng"
             )
 
-        print("🔎 RAW OCR:", text[:200])
-
         text = clean_ocr_text(text)
-
-        print("✅ CLEAN OCR:", text[:200])
 
         if not _is_valid_ocr(text):
             return ""
 
         return text
 
-    # ---------------- UNSUPPORTED ----------------
     else:
         raise ValueError("Unsupported file type")

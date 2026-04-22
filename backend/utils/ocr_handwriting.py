@@ -1,26 +1,29 @@
 import io
 import re
 import os
+import json
 
-# 🔥 SAFE credentials loading (env + fallback)
+# 🔥 SAFE credentials loading (ENV ONLY — NO FILE)
 try:
     from google.cloud import vision
     from google.oauth2 import service_account
 
-    # ✅ Use environment variable, fallback to your current working path
-    CREDENTIALS_PATH = os.getenv(
-        "GOOGLE_CREDENTIALS_PATH",
-        r"C:\PROGRAMMING\Projects\Plagiarism checker\key.json"
-    )
+    # ✅ Read from environment variable
+    creds_json = os.getenv("GOOGLE_CREDENTIALS")
 
-    credentials = service_account.Credentials.from_service_account_file(
-        CREDENTIALS_PATH
+    print("ENV CHECK:", creds_json[:50] if creds_json else "NOT SET")
+
+    if not creds_json:
+        raise RuntimeError("GOOGLE_CREDENTIALS not set")
+    
+    credentials = service_account.Credentials.from_service_account_info(
+        json.loads(creds_json)
     )
 
     client = vision.ImageAnnotatorClient(credentials=credentials)
     _VISION_AVAILABLE = True
 
-    print("✅ Google Vision initialized successfully")
+    print("✅ Google Vision initialized successfully (ENV MODE)")
 
 except Exception as e:
     print("❌ Google Vision import/init failed:", e)
