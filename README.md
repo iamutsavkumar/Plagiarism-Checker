@@ -18,9 +18,9 @@ PlagiarismCheck is a **full-stack AI-powered plagiarism detection system** that 
 
 It combines:
 
-* Statistical similarity (Jaccard + TF-IDF)
-* Semantic understanding (transformer embeddings)
-* Sentence-level alignment
+* Statistical similarity (Jaccard + TF-IDF).
+* Semantic understanding (transformer embeddings).
+* Sentence-level alignment.
 
 ---
 
