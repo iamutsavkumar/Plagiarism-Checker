@@ -14,7 +14,7 @@
 
 ## Live Demo
 
-**Try the app here:** [https://utsav-kumar-link.streamlit.app](https://plagiarism-checker-j9bs.onrender.com)
+**Try the app here:** [https://utsav-kumar-link.render.app](https://plagiarism-checker-j9bs.onrender.com)
 
 ---
 
