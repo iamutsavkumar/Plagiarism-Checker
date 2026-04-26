@@ -1,14 +1,3 @@
-"""
-routes.py
----------
-Stable FastAPI routes (SAFE UPGRADE):
-- no None returns
-- proper error handling
-- identical file handling
-- matched pairs preserved
-- env-configurable limits ✅
-"""
-
 from __future__ import annotations
 
 import time
