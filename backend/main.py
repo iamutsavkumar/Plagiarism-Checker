@@ -1,19 +1,3 @@
-"""
-main.py
--------
-FastAPI application factory and entry point.
-
-Run locally:
-    uvicorn backend.main:app --reload --port 8000
-
-Environment variables (all optional):
-    HOST            Bind address          (default: 0.0.0.0)
-    PORT            Bind port             (default: 8000)
-    CORS_ORIGINS    Comma-separated list  (default: http://localhost:*,null)
-    LOG_LEVEL       uvicorn log level     (default: info)
-    PRELOAD_MODEL   preload semantic model on startup (default: false)
-"""
-
 from __future__ import annotations
 
 import os
