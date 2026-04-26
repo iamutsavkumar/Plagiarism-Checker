@@ -197,16 +197,6 @@ TESSERACT_PATH=your_path
 
 ---
 
-# Deployment
-
-You can deploy this on:
-
-* Render
-* Railway
-* Docker
-
----
-
 # Roadmap
 
 * [ ] Multi-document comparison
