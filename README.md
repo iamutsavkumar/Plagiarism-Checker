@@ -6,8 +6,6 @@
 
 # UI Preview
 
-> Replace the image below with your actual screenshot
-
 ![UI Preview](frontend/assets/ui-preview.png)
 
 ---
